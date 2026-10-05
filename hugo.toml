@@ -1,0 +1,12 @@
+baseURL = 'https://ytthumbnaildownloader.com/'
+defaultContentLanguage = 'en'
+title = 'YT Thumbnail Downloader'
+enableRobotsTXT = true
+
+[params]
+  description = 'Download YouTube video thumbnails in HD, 4K, 1080p, and all resolution sizes instantly for free.'
+
+[sitemap]
+  changefreq = 'weekly'
+  priority = 0.5
+  filename = 'sitemap.xml'

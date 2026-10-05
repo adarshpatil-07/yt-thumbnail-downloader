@@ -1,0 +1,16 @@
+{{ define "main" }}
+<div class="max-w-4xl mx-auto px-4 py-12">
+  <h1 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-8">{{ .Title }}</h1>
+  <div class="grid gap-6">
+    {{ range .Pages }}
+    <article class="p-6 bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
+      <h2 class="text-xl font-bold mb-2">
+        <a href="{{ .Permalink }}" class="text-slate-900 dark:text-white hover:text-red-600 dark:hover:text-red-400 transition-colors">{{ .Title }}</a>
+      </h2>
+      <p class="text-slate-600 dark:text-slate-400 text-sm mb-4">{{ .Summary | truncate 150 }}</p>
+      <a href="{{ .Permalink }}" class="inline-flex items-center text-sm font-semibold text-red-600 hover:text-red-700">Read article &rarr;</a>
+    </article>
+    {{ end }}
+  </div>
+</div>
+{{ end }}

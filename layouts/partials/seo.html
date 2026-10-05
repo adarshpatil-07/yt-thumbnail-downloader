@@ -1,0 +1,102 @@
+<!-- Open Graph & Canonical Meta Tags -->
+<meta property="og:site_name" content="{{ site.Title }}">
+<meta property="og:title" content="{{ if .IsHome }}{{ site.Title }} - Free HD YouTube Thumbnail Downloader{{ else }}{{ .Title }} | {{ site.Title }}{{ end }}">
+<meta property="og:description" content="{{ with .Description }}{{ . }}{{ else }}{{ site.Params.description }}{{ end }}">
+<meta property="og:type" content="{{ if eq .Section "blog" }}article{{ else }}website{{ end }}">
+<meta property="og:url" content="{{ .Permalink }}">
+<meta property="og:image" content="{{ "favicon.svg" | absURL }}">
+
+<!-- Twitter Cards -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ if .IsHome }}{{ site.Title }} - Free HD YouTube Thumbnail Downloader{{ else }}{{ .Title }} | {{ site.Title }}{{ end }}">
+<meta name="twitter:description" content="{{ with .Description }}{{ . }}{{ else }}{{ site.Params.description }}{{ end }}">
+
+<link rel="canonical" href="{{ .Permalink }}">
+
+<!-- JSON-LD Structured Data -->
+{{ if .IsHome }}
+<!-- WebApplication Schema -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "{{ site.Title }}",
+  "url": "{{ .Permalink }}",
+  "description": "{{ site.Params.description }}",
+  "applicationCategory": "MultimediaApplication",
+  "operatingSystem": "All",
+  "browserRequirements": "Requires JavaScript. Requires HTML5.",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+}
+</script>
+
+<!-- FAQPage Schema -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is YT Thumbnail Downloader free to use?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes! Our YouTube thumbnail downloader is 100% free with no registration, software installation, or hidden costs."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What resolution thumbnails can I download?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "You can download thumbnails in up to 5 sizes depending on what the video author uploaded: Maximum HD (1280x720), Standard HD (640x480), High Quality (480x360), Medium Quality (320x180), and Default (120x90)."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why is Max HD quality (1080p / 720p) missing for some videos?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The Maximum HD resolution (1280x720) is only available if the creator uploaded a high-resolution custom thumbnail when publishing the video. If they didn't upload a custom thumbnail, YouTube automatically generates lower-resolution images."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is it legal to download YouTube thumbnails?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Downloading YouTube thumbnails for personal reference, research, or fair use is generally allowed. However, all image rights belong to their original content creators. Make sure to respect copyright laws before using thumbnails commercially."
+      }
+    }
+  ]
+}
+</script>
+{{ else if eq .Section "blog" }}
+<!-- Article Schema for Blog Posts -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "{{ .Title }}",
+  "description": "{{ with .Description }}{{ . }}{{ else }}{{ .Summary }}{{ end }}",
+  "datePublished": "{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}",
+  "dateModified": "{{ .Lastmod.Format "2006-01-02T15:04:05Z07:00" }}",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{ .Permalink }}"
+  },
+  "author": {
+    "@type": "Organization",
+    "name": "{{ site.Title }}"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "{{ site.Title }}"
+  }
+}
+</script>
+{{ end }}

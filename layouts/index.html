@@ -1,0 +1,289 @@
+{{ define "main" }}
+<!-- Hero Section -->
+<section class="relative py-12 sm:py-20 bg-gradient-to-b from-slate-100/80 via-slate-50 to-slate-50 dark:from-slate-900/50 dark:via-slate-950 dark:to-slate-950 border-b border-slate-200/60 dark:border-slate-800/60">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 text-center">
+    
+    <!-- Badge -->
+    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-100/80 dark:bg-red-950/60 text-red-700 dark:text-red-300 border border-red-200/60 dark:border-red-900/50 text-xs font-semibold uppercase tracking-wider mb-6 shadow-xs">
+      <span class="w-2 h-2 rounded-full bg-red-600 animate-pulse"></span>
+      <span>Free &amp; Instant 4K HD Downloader</span>
+    </div>
+
+    <!-- Title & Subtitle -->
+    <h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight mb-4">
+      Download YouTube Video <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-amber-600 dark:from-red-500 dark:to-amber-500">Thumbnails</span>
+    </h1>
+    <p class="text-base sm:text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-8 leading-relaxed">
+      Paste any YouTube link to instantly view and download cover images in full HD, 1080p, and 4K resolutions with one click.
+    </p>
+
+    <!-- Search / Input Form -->
+    <div class="max-w-2xl mx-auto">
+      <form id="downloader-form" onsubmit="return false;" class="relative p-2 bg-white dark:bg-slate-900 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row gap-2 transition-all focus-within:ring-2 focus-within:ring-red-500/50 focus-within:border-red-500">
+        <div class="relative flex-grow flex items-center">
+          <div class="absolute left-4 text-slate-400 dark:text-slate-500 pointer-events-none">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+            </svg>
+          </div>
+          <input 
+            type="text" 
+            id="yt-url-input"
+            placeholder="Paste YouTube link here (e.g. https://www.youtube.com/watch?v=...)" 
+            class="w-full pl-11 pr-10 py-3.5 bg-transparent text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 text-sm sm:text-base focus:outline-none"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <button type="button" id="clear-input-btn" title="Clear input" class="hidden absolute right-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-1 rounded-lg transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+        <button 
+          type="submit" 
+          id="get-btn"
+          class="px-7 py-3.5 bg-red-600 hover:bg-red-700 active:scale-[0.98] text-white font-semibold text-sm sm:text-base rounded-xl shadow-md shadow-red-600/25 flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed">
+          <!-- Button Icon -->
+          <svg id="btn-search-icon" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+          <!-- Loading Spinner (Hidden by default) -->
+          <svg id="btn-spinner" class="hidden w-5 h-5 animate-spin text-white" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <span id="btn-text">Get Thumbnail</span>
+        </button>
+      </form>
+
+      <!-- Error Message Container (Hidden by default) -->
+      <div id="error-message" class="hidden mt-3 p-3.5 rounded-xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-900 text-red-700 dark:text-red-300 text-sm font-medium flex items-center gap-2 text-left">
+        <svg class="w-5 h-5 shrink-0 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+        </svg>
+        <span id="error-text">Please enter a valid YouTube video URL or ID.</span>
+      </div>
+
+      <!-- CORS Notice Banner (Hidden by default) -->
+      <div id="cors-notice" class="hidden mt-3 p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-900 text-amber-800 dark:text-amber-300 text-xs sm:text-sm text-left flex items-start gap-2">
+        <svg class="w-5 h-5 shrink-0 text-amber-600 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <div>
+          <strong>Download Tip:</strong> Browser security (CORS) opened the image in a new tab. Right-click or long-press the image and select <em>Save Image As</em> to download.
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- Results Section -->
+<section id="results-section" class="py-12 max-w-6xl mx-auto px-4 sm:px-6">
+  
+  <!-- Video Header Information Preview -->
+  <div id="video-info" class="hidden mb-10 p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <div class="flex items-start gap-4">
+      <div class="w-12 h-12 rounded-full bg-red-100 dark:bg-red-950/60 text-red-600 dark:text-red-400 flex items-center justify-center font-bold text-lg shrink-0">
+        YT
+      </div>
+      <div>
+        <h2 id="video-title" class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white line-clamp-2">
+          <!-- Video title populated dynamically -->
+        </h2>
+        <p id="channel-name" class="text-sm font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-0.5">
+          <!-- Channel name populated dynamically -->
+        </p>
+      </div>
+    </div>
+    <div id="quality-count-badge" class="px-3 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-semibold text-slate-600 dark:text-slate-300 shrink-0">
+      <!-- Quality count populated dynamically -->
+    </div>
+  </div>
+
+  <!-- Cards Grid Container -->
+  <div id="cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Thumbnail cards dynamically injected by app.js -->
+  </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="py-16 bg-slate-100/60 dark:bg-slate-900/40 border-y border-slate-200/60 dark:border-slate-800/60">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6">
+    <div class="text-center max-w-2xl mx-auto mb-12">
+      <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-3">
+        How to Download YouTube Thumbnails in 3 Easy Steps
+      </h2>
+      <p class="text-slate-600 dark:text-slate-400 text-sm sm:text-base">
+        Our free online tool makes it quick and effortless to grab cover images from any YouTube video.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <!-- Step 1 -->
+      <div class="p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm text-center relative">
+        <div class="w-12 h-12 rounded-2xl bg-red-100 dark:bg-red-950/60 text-red-600 dark:text-red-400 font-extrabold text-xl flex items-center justify-center mx-auto mb-4">
+          1
+        </div>
+        <h3 class="font-bold text-lg text-slate-900 dark:text-white mb-2">Copy Video Link</h3>
+        <p class="text-sm text-slate-600 dark:text-slate-400">
+          Open YouTube and copy the URL of the video, Short, or live stream from your browser address bar or Share menu.
+        </p>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm text-center relative">
+        <div class="w-12 h-12 rounded-2xl bg-red-100 dark:bg-red-950/60 text-red-600 dark:text-red-400 font-extrabold text-xl flex items-center justify-center mx-auto mb-4">
+          2
+        </div>
+        <h3 class="font-bold text-lg text-slate-900 dark:text-white mb-2">Paste into Search Box</h3>
+        <p class="text-sm text-slate-600 dark:text-slate-400">
+          Paste the link into the input field above and click <strong>Get Thumbnail</strong>. The tool automatically detects all available resolutions.
+        </p>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm text-center relative">
+        <div class="w-12 h-12 rounded-2xl bg-red-100 dark:bg-red-950/60 text-red-600 dark:text-red-400 font-extrabold text-xl flex items-center justify-center mx-auto mb-4">
+          3
+        </div>
+        <h3 class="font-bold text-lg text-slate-900 dark:text-white mb-2">One-Click Download</h3>
+        <p class="text-sm text-slate-600 dark:text-slate-400">
+          Choose your desired thumbnail quality (Max HD, SD, HQ) and click <strong>Download</strong> to save the image directly to your device.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Supported Formats Section -->
+<section class="py-16 max-w-5xl mx-auto px-4 sm:px-6">
+  <div class="text-center max-w-2xl mx-auto mb-10">
+    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-3">
+      Supported YouTube Link Formats
+    </h2>
+    <p class="text-slate-600 dark:text-slate-400 text-sm sm:text-base">
+      We support all standard YouTube URL variations and shorthand links.
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center gap-3">
+      <div class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-red-600 dark:text-red-400">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+      </div>
+      <div>
+        <p class="text-xs font-semibold text-slate-400 uppercase">Standard Watch URL</p>
+        <p class="text-xs font-mono font-medium text-slate-800 dark:text-slate-200 truncate">youtube.com/watch?v=...</p>
+      </div>
+    </div>
+
+    <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center gap-3">
+      <div class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-red-600 dark:text-red-400">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101"></path></svg>
+      </div>
+      <div>
+        <p class="text-xs font-semibold text-slate-400 uppercase">Shortened URL</p>
+        <p class="text-xs font-mono font-medium text-slate-800 dark:text-slate-200 truncate">youtu.be/...</p>
+      </div>
+    </div>
+
+    <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center gap-3">
+      <div class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-red-600 dark:text-red-400">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+      </div>
+      <div>
+        <p class="text-xs font-semibold text-slate-400 uppercase">YouTube Shorts</p>
+        <p class="text-xs font-mono font-medium text-slate-800 dark:text-slate-200 truncate">youtube.com/shorts/...</p>
+      </div>
+    </div>
+
+    <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center gap-3">
+      <div class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-red-600 dark:text-red-400">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+      </div>
+      <div>
+        <p class="text-xs font-semibold text-slate-400 uppercase">Embedded Player</p>
+        <p class="text-xs font-mono font-medium text-slate-800 dark:text-slate-200 truncate">youtube.com/embed/...</p>
+      </div>
+    </div>
+
+    <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center gap-3">
+      <div class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-red-600 dark:text-red-400">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5.636 18.364a9 9 0 010-12.728m12.728 0a9 9 0 010 12.728M8.464 15.536a5 5 0 010-7.072m7.072 0a5 5 0 010 7.072M12 12h.01"></path></svg>
+      </div>
+      <div>
+        <p class="text-xs font-semibold text-slate-400 uppercase">Live Stream Link</p>
+        <p class="text-xs font-mono font-medium text-slate-800 dark:text-slate-200 truncate">youtube.com/live/...</p>
+      </div>
+    </div>
+
+    <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center gap-3">
+      <div class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-red-600 dark:text-red-400">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 18h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+      </div>
+      <div>
+        <p class="text-xs font-semibold text-slate-400 uppercase">Mobile Web</p>
+        <p class="text-xs font-mono font-medium text-slate-800 dark:text-slate-200 truncate">m.youtube.com/watch?...</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="py-16 bg-slate-100/60 dark:bg-slate-900/40 border-t border-slate-200/60 dark:border-slate-800/60">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6">
+    <div class="text-center max-w-2xl mx-auto mb-12">
+      <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-3">
+        Frequently Asked Questions
+      </h2>
+      <p class="text-slate-600 dark:text-slate-400 text-sm sm:text-base">
+        Everything you need to know about downloading YouTube video thumbnails.
+      </p>
+    </div>
+
+    <div class="space-y-4">
+      <div class="p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+        <h3 class="font-bold text-base sm:text-lg text-slate-900 dark:text-white mb-2">Is YT Thumbnail Downloader free to use?</h3>
+        <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+          Yes! Our YouTube thumbnail downloader is 100% free with no registration, software installation, or hidden costs.
+        </p>
+      </div>
+
+      <div class="p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+        <h3 class="font-bold text-base sm:text-lg text-slate-900 dark:text-white mb-2">What resolution thumbnails can I download?</h3>
+        <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+          You can download thumbnails in up to 5 sizes depending on what the video author uploaded: Maximum HD (1280x720), Standard HD (640x480), High Quality (480x360), Medium Quality (320x180), and Default (120x90).
+        </p>
+      </div>
+
+      <div class="p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+        <h3 class="font-bold text-base sm:text-lg text-slate-900 dark:text-white mb-2">Why is Max HD quality (1080p / 720p) missing for some videos?</h3>
+        <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+          The Maximum HD resolution (1280x720) is only available if the creator uploaded a high-resolution custom thumbnail when publishing the video. If they didn't upload a custom thumbnail, YouTube automatically generates lower-resolution images.
+        </p>
+      </div>
+
+      <div class="p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+        <h3 class="font-bold text-base sm:text-lg text-slate-900 dark:text-white mb-2">Is it legal to download YouTube thumbnails?</h3>
+        <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+          Downloading YouTube thumbnails for personal reference, research, or fair use is generally allowed. However, all image rights belong to their original content creators. Make sure to respect copyright laws before using thumbnails commercially.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Disclaimer Box -->
+<div class="max-w-4xl mx-auto px-4 sm:px-6 my-12">
+  <div class="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 text-amber-800 dark:text-amber-300 text-xs sm:text-sm flex items-start gap-3">
+    <svg class="w-5 h-5 shrink-0 text-amber-600 dark:text-amber-400 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+    </svg>
+    <div>
+      <span class="font-bold">Disclaimer:</span> This website is an independent utility and is not affiliated, associated, authorized, endorsed by, or in any way officially connected with YouTube, Google LLC, or any of their subsidiaries.
+    </div>
+  </div>
+</div>
+{{ end }}
