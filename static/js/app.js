@@ -448,7 +448,10 @@ function hideCorsNotice() {
 
 function showResults() {
   const resultsSec = document.getElementById('results-section');
-  resultsSec?.classList.remove('hidden');
+  if (resultsSec) {
+    resultsSec.classList.remove('hidden');
+    resultsSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 }
 
 function hideResults() {
