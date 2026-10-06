@@ -1,7 +1,5 @@
-{
-  "name": "yt-thumbnail-downloader",
-  "compatibility_date": "2026-10-06",
-  "assets": {
-    "directory": "./public"
-  }
-}
+name = "yt-thumbnail-downloader"
+compatibility_date = "2026-10-06"
+
+[assets]
+directory = "./public"
